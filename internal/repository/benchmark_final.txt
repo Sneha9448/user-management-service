@@ -1,0 +1,23 @@
+﻿Connected to PostgreSQL successfully
+Database connection closed
+goos: windows
+goarch: amd64
+pkg: user-management-service/internal/repository
+cpu: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+BenchmarkCreateUser-8    	Connected to PostgreSQL successfully
+2026/02/09 11:27:57 Error creating user: ERROR: duplicate key value violates unique constraint "users_email_key" (SQLSTATE 23505)
+Database connection closed
+--- FAIL: BenchmarkCreateUser-8
+    performance_test.go:26: Failed to create user: ERROR: duplicate key value violates unique constraint "users_email_key" (SQLSTATE 23505)
+Connected to PostgreSQL successfully
+Database connection closed
+BenchmarkGetAllUsers-8   	Connected to PostgreSQL successfully
+Database connection closed
+Connected to PostgreSQL successfully
+Database connection closed
+Connected to PostgreSQL successfully
+Database connection closed
+   19639	     56253 ns/op	    1082 B/op	      19 allocs/op
+FAIL
+exit status 1
+FAIL	user-management-service/internal/repository	3.989s

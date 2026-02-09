@@ -1,0 +1,32 @@
+﻿go : 2026/02/06 17:40:40 
+Starting User Management 
+Service...
+At line:1 char:1
++ go run 
+cmd/server/main.go *>&1 | 
+Out-File -FilePath 
+server_log.txt -E ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (2  
+  026/02/06 17:4...ment   
+  Service...:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+Connected to PostgreSQL successfully
+2026/02/06 17:40:40 
+Server listening on port 
+8081
+2026/02/06 17:40:40 
+Server failed to start: 
+listen tcp :8081: bind: 
+Only one usage of each 
+socket address 
+(protocol/network 
+address/port) is normally 
+permitted.
+exit status 1

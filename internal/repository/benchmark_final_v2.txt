@@ -1,0 +1,24 @@
+﻿Connected to PostgreSQL successfully
+Database connection closed
+goos: windows
+goarch: amd64
+pkg: user-management-service/internal/repository
+cpu: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+BenchmarkCreateUser-8    	Connected to PostgreSQL successfully
+Database connection closed
+Connected to PostgreSQL successfully
+Database connection closed
+Connected to PostgreSQL successfully
+Database connection closed
+Connected to PostgreSQL successfully
+Database connection closed
+    6302	    198851 ns/op	    1089 B/op	      23 allocs/op
+Connected to PostgreSQL successfully
+Database connection closed
+BenchmarkGetAllUsers-8   	Connected to PostgreSQL successfully
+Database connection closed
+Connected to PostgreSQL successfully
+Database connection closed
+     279	   5225482 ns/op	 2366350 B/op	   51168 allocs/op
+PASS
+ok  	user-management-service/internal/repository	7.124s

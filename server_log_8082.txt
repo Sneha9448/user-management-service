@@ -1,0 +1,3 @@
+2026/02/06 17:41:30 Starting User Management Service...
+Connected to PostgreSQL successfully
+2026/02/06 17:41:30 Server listening on port 8082

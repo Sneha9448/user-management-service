@@ -1,0 +1,116 @@
+{
+	"info": {
+		"_postman_id": "user-management-service",
+		"name": "User Management Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"url": "http://localhost:8081/health"
+			}
+		},
+		{
+			"name": "Create User (REST)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\"\n}"
+				},
+				"url": "http://localhost:8081/users"
+			}
+		},
+		{
+			"name": "Get User by ID (REST)",
+			"request": {
+				"method": "GET",
+				"url": "http://localhost:8081/users/1"
+			}
+		},
+		{
+			"name": "Update User (REST)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"updated@example.com\"\n}"
+				},
+				"url": "http://localhost:8081/users/1"
+			}
+		},
+		{
+			"name": "Delete User (REST)",
+			"request": {
+				"method": "DELETE",
+				"url": "http://localhost:8081/users/1"
+			}
+		},
+		{
+			"name": "Get All Users (GraphQL)",
+			"request": {
+				"method": "POST",
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query {\n  users {\n    id\n    name\n    email\n  }\n}"
+					}
+				},
+				"url": "http://localhost:8081/graphql"
+			}
+		},
+		{
+			"name": "Create User (GraphQL)",
+			"request": {
+				"method": "POST",
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\n  createUser(name: \"GraphQL User\", email: \"graphql@example.com\") {\n    id\n    name\n    email\n  }\n}"
+					}
+				},
+				"url": "http://localhost:8081/graphql"
+			}
+		},
+		{
+			"name": "Update User (GraphQL)",
+			"request": {
+				"method": "POST",
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\n  updateUser(id: 1, name: \"Updated GraphQL\", email: \"updatedgql@example.com\") {\n    id\n    name\n    email\n  }\n}"
+					}
+				},
+				"url": "http://localhost:8081/graphql"
+			}
+		},
+		{
+			"name": "Delete User (GraphQL)",
+			"request": {
+				"method": "POST",
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\n  deleteUser(id: 1)\n}"
+					}
+				},
+				"url": "http://localhost:8081/graphql"
+			}
+		}
+	]
+}

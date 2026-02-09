@@ -1,0 +1,13 @@
+﻿Connected to PostgreSQL successfully
+2026/02/09 11:24:21 Error creating user: ERROR: relation "users" does not exist (SQLSTATE 42P01)
+Database connection closed
+--- FAIL: BenchmarkCreateUser
+    performance_test.go:26: Failed to create user: ERROR: relation "users" does not exist (SQLSTATE 42P01)
+Connected to PostgreSQL successfully
+2026/02/09 11:24:22 Error querying users: ERROR: relation "users" does not exist (SQLSTATE 42P01)
+Database connection closed
+--- FAIL: BenchmarkGetAllUsers
+    performance_test.go:41: Failed to get all users: ERROR: relation "users" does not exist (SQLSTATE 42P01)
+FAIL
+exit status 1
+FAIL	user-management-service/internal/repository	1.783s
