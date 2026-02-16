@@ -3,6 +3,7 @@
 A production-ready REST API in Go for managing users, using PostgreSQL (pgx) and Gorilla Mux.
 
 ## Features
+- **Authentication**: Email OTP based login with JWT session management.
 - **RESTful API**: Full CRUD operations for user management.
 - **GraphQL API**: Query and mutate users via `/graphql`.
 - **PostgreSQL**: Robust connection pooling with `pgx`.
@@ -37,12 +38,22 @@ Set the following environment variables. You can set them in your terminal or cr
 ```bash
 export DATABASE_URL="postgres://user:password@localhost:5432/dbname"
 export PORT="8080"
+export SMTP_HOST="smtp.gmail.com"
+export SMTP_PORT="587"
+export SMTP_EMAIL="your-email@gmail.com"
+export SMTP_PASSWORD="your-app-password"
+export JWT_SECRET="your-secret-key"
 ```
 
 **Windows (PowerShell):**
 ```powershell
 $env:DATABASE_URL="postgres://user:password@localhost:5432/dbname"
 $env:PORT="8080"
+$env:SMTP_HOST="smtp.gmail.com"
+$env:SMTP_PORT="587"
+$env:SMTP_EMAIL="your-email@gmail.com"
+$env:SMTP_PASSWORD="your-app-password"
+$env:JWT_SECRET="your-secret-key"
 ```
 
 *Note: The default `DATABASE_URL` is `postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable` if not specified.*
@@ -60,21 +71,49 @@ Connected to PostgreSQL successfully
 Server listening on port 8080
 ```
 
+## Authentication
+
+This service uses **Email OTP (One-Time Password)** for authentication.
+
+### 1. Request OTP
+- **URL**: `/auth/login`
+- **Method**: `POST`
+- **Body**:
+  ```json
+  { "email": "user@example.com" }
+  ```
+- **Response**: `200 OK` (Email sent)
+
+### 2. Verify OTP & Get Token
+- **URL**: `/auth/verify`
+- **Method**: `POST`
+- **Body**:
+  ```json
+  { 
+    "email": "user@example.com",
+    "otp": "123456"
+  }
+  ```
+- **Response**: `200 OK`
+  ```json
+  {
+    "token": "eyJhbGciOiJIUzI1NiIsIn...",
+    "message": "Login successful"
+  }
+  ```
+
+### 3. Using the Token
+Include the token in the `Authorization` header for protected routes:
+```
+Authorization: Bearer <your_token>
+```
+
 ## Testing with Postman
 
 1. Open Postman.
 2. Click **Import** -> **Upload Files**.
 3. Select `postman_collection.json` from this directory.
-4. You will see nine requests:
-   - **Health Check**: `GET localhost:8080/health`
-   - **Create User (REST)**: `POST localhost:8080/users`
-   - **Get User (REST)**: `GET localhost:8080/users/1`
-   - **Update User (REST)**: `PUT localhost:8080/users/1`
-   - **Delete User (REST)**: `DELETE localhost:8080/users/1`
-   - **Get All Users (GraphQL)**: `POST localhost:8080/graphql`
-   - **Create User (GraphQL)**: `POST localhost:8080/graphql`
-   - **Update User (GraphQL)**: `POST localhost:8080/graphql`
-   - **Delete User (GraphQL)**: `POST localhost:8080/graphql`
+4. You will see requests for Auth, REST, and GraphQL.
 
 ## REST API Endpoints
 
