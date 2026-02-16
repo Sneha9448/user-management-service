@@ -2,6 +2,15 @@
 
 package model
 
+import (
+	"user-management-service/internal/models"
+)
+
+type AuthResponse struct {
+	Token string       `json:"token"`
+	User  *models.User `json:"user"`
+}
+
 type Mutation struct {
 }
 

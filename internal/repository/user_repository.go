@@ -137,3 +137,26 @@ func DeleteUser(id int) error {
 
 	return nil
 }
+
+// GetUserByEmail fetches a user by their email
+func GetUserByEmail(email string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if database.DB == nil {
+		return nil, errors.New("database connection is not initialized")
+	}
+
+	query := `SELECT id, name, email FROM users WHERE email = $1`
+
+	var user models.User
+	err := database.DB.QueryRow(ctx, query, email).Scan(&user.ID, &user.Name, &user.Email)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errors.New("user not found")
+		}
+		log.Printf("Error fetching user by email: %v", err)
+		return nil, err
+	}
+	return &user, nil
+}

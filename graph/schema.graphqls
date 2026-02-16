@@ -4,15 +4,23 @@ type User {
   email: String!
 }
 
+type AuthResponse {
+  token: String!
+  user: User!
+}
+
 type Query {
   users: [User!]!
   user(id: ID!): User
+  me: User
 }
-
 
 type Mutation {
   createUser(name: String!, email: String!): User!
   updateUser(id: ID!, name: String!, email: String!): User!
   deleteUser(id: ID!): Boolean!
+  loginWithGoogle(idToken: String!): AuthResponse!
+  requestOtp(email: String!): String
+  verifyOtp(email: String!, otp: String!): AuthResponse!
 }
 

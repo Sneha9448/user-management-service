@@ -3,8 +3,7 @@
 A production-ready REST API in Go for managing users, using PostgreSQL (pgx) and Gorilla Mux.
 
 ## Features
-- **RESTful API**: Create and retrieve users.
-- **GraphQL API**: Query and mutate users via `/graphql`.
+- **RESTful API**: Full CRUD operations for user management.
 - **GraphQL API**: Query and mutate users via `/graphql`.
 - **PostgreSQL**: Robust connection pooling with `pgx`.
 - **Configuration**: Environment variable based configuration.
@@ -66,17 +65,23 @@ Server listening on port 8080
 1. Open Postman.
 2. Click **Import** -> **Upload Files**.
 3. Select `postman_collection.json` from this directory.
-4. You will see three requests:
+4. You will see nine requests:
    - **Health Check**: `GET localhost:8080/health`
-   - **Create User**: `POST localhost:8080/users` (Body: JSON)
-   - **Get User**: `GET localhost:8080/users/1`
+   - **Create User (REST)**: `POST localhost:8080/users`
+   - **Get User (REST)**: `GET localhost:8080/users/1`
+   - **Update User (REST)**: `PUT localhost:8080/users/1`
+   - **Delete User (REST)**: `DELETE localhost:8080/users/1`
+   - **Get All Users (GraphQL)**: `POST localhost:8080/graphql`
+   - **Create User (GraphQL)**: `POST localhost:8080/graphql`
+   - **Update User (GraphQL)**: `POST localhost:8080/graphql`
+   - **Delete User (GraphQL)**: `POST localhost:8080/graphql`
 
-## API Endpoints
+## REST API Endpoints
 
 ### 1. Health Check
 - **URL**: `/health`
 - **Method**: `GET`
-- **Response**: `200 bit OK`
+- **Response**: `200 OK`
   ```json
   { "status": "healthy" }
   ```
@@ -92,22 +97,73 @@ Server listening on port 8080
   }
   ```
 - **Response**: `201 Created`
-  ```json
-  {
-      "id": 1,
-      "name": "Jane Doe",
-      "email": "jane@example.com"
-  }
-  ```
 
 ### 3. Get User
 - **URL**: `/users/{id}`
 - **Method**: `GET`
 - **Response**: `200 OK`
+
+### 4. Update User
+- **URL**: `/users/{id}`
+- **Method**: `PUT`
+- **Body**:
   ```json
   {
-      "id": 1,
-      "name": "Jane Doe",
-      "email": "jane@example.com"
+      "name": "Updated Name",
+      "email": "updated@example.com"
   }
   ```
+- **Response**: `200 OK`
+
+### 5. Delete User
+- **URL**: `/users/{id}`
+- **Method**: `DELETE`
+- **Response**: `204 No Content`
+
+## GraphQL API Endpoints
+
+All GraphQL requests are sent to `/graphql` via `POST`.
+
+### 1. Get All Users (Query)
+**Query:**
+```graphql
+query {
+  users {
+    id
+    name
+    email
+  }
+}
+```
+
+### 2. Create User (Mutation)
+**Mutation:**
+```graphql
+mutation {
+  createUser(name: "GraphQL User", email: "graphql@example.com") {
+    id
+    name
+    email
+  }
+}
+```
+
+### 3. Update User (Mutation)
+**Mutation:**
+```graphql
+mutation {
+  updateUser(id: 1, name: "Updated GraphQL", email: "updatedgql@example.com") {
+    id
+    name
+    email
+  }
+}
+```
+
+### 4. Delete User (Mutation)
+**Mutation:**
+```graphql
+mutation {
+  deleteUser(id: 1)
+}
+```
