@@ -1,0 +1,41 @@
+# Environment variables (CRITICAL - Contains SMTP credentials and secrets)
+.env
+
+# Compiled binaries
+*.exe
+*.dll
+*.so
+*.dylib
+server
+server.exe
+
+# Test and debug files
+*.test
+*.log
+*.txt
+debug_output*.log
+auth_test_results*.log
+otp_debug.log
+server_log*.txt
+server_output*.log
+server_ps.log
+output*.txt
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Go specific
+vendor/
+*.out
+
+# Temporary files
+tmp/
+temp/

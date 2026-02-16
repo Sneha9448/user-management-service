@@ -7,6 +7,8 @@ import (
 	"user-management-service/graph"
 	"user-management-service/internal/config"
 	"user-management-service/internal/database"
+	"user-management-service/internal/email"
+	"user-management-service/internal/middleware"
 	"user-management-service/internal/router"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -19,7 +21,10 @@ func main() {
 	cfg := config.LoadConfig()
 	log.Println("Starting User Management Service...")
 
-	// 2. Connect to Database (blocks until connected or fails)
+	// 2. Initialize Email Service
+	email.Init(cfg)
+
+	// 3. Connect to Database (blocks until connected or fails)
 	database.ConnectDB(cfg.DatabaseURL)
 	defer database.CloseDB()
 
@@ -27,7 +32,7 @@ func main() {
 	r := router.SetupRouter()
 
 	// GraphQL Handler
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{Config: cfg}}))
 	r.Handle("/graphql", srv)
 	r.Handle("/playground", playground.Handler("GraphQL playground", "/graphql"))
 
@@ -50,7 +55,8 @@ func main() {
 		AllowCredentials: true,
 	})
 
-	handler := c.Handler(r)
+	handler := middleware.AuthMiddleware()(r)
+	handler = c.Handler(handler)
 
 	if err := http.ListenAndServe(":"+cfg.Port, handler); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
