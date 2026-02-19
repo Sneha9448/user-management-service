@@ -17,6 +17,12 @@ func SetupRouter() *mux.Router {
 	r.HandleFunc("/users", handlers.CreateUser).Methods("POST")
 	r.HandleFunc("/users", handlers.CreateUser).Methods("POST")
 	r.HandleFunc("/users/{id}", handlers.GetUser).Methods("GET")
+	r.HandleFunc("/users/{id}", handlers.UpdateUser).Methods("PUT")
+	r.HandleFunc("/users/{id}", handlers.DeleteUser).Methods("DELETE")
+
+	// Auth Routes
+	r.HandleFunc("/auth/login", handlers.RequestOTP).Methods("POST")
+	r.HandleFunc("/auth/verify", handlers.VerifyOTP).Methods("POST")
 
 	// Pprof handlers
 	r.HandleFunc("/debug/pprof/", pprof.Index)

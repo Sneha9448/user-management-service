@@ -2,6 +2,7 @@ type User {
   id: ID!
   name: String!
   email: String!
+  role: String!
 }
 
 type AuthResponse {
@@ -21,6 +22,6 @@ type Mutation {
   deleteUser(id: ID!): Boolean!
   loginWithGoogle(idToken: String!): AuthResponse!
   requestOtp(email: String!): String
-  verifyOtp(email: String!, otp: String!): AuthResponse!
+  verifyOtp(email: String!, otp: String!, role: String): AuthResponse!
 }
 

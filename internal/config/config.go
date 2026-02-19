@@ -29,7 +29,7 @@ func LoadConfig() *Config {
 			"DATABASE_URL",
 			"postgres://postgres:postgres@localhost:5432/user?sslmode=disable&search_path=public",
 		),
-		Port:         getEnv("PORT", "8081"),
+		Port:         getEnv("PORT", "8080"),
 		SMTPHost:     getEnv("SMTP_HOST", "smtp.gmail.com"),
 		SMTPPort:     getEnv("SMTP_PORT", "587"),
 		SMTPEmail:    getEnv("SMTP_EMAIL", ""),
