@@ -3,6 +3,8 @@
 A production-ready REST API in Go for managing users, using PostgreSQL (pgx) and Gorilla Mux.
 
 ## Features
+- **Frontend Dashboard**: Modern React 19 + Vite dashboard with SaaS aesthetics.
+- **Role-Based Access Control (RBAC)**: Support for `admin` and `user` roles with middleware protection.
 - **Authentication**: Email OTP based login with JWT session management.
 - **RESTful API**: Full CRUD operations for user management.
 - **GraphQL API**: Query and mutate users via `/graphql`.
@@ -206,3 +208,4 @@ mutation {
   deleteUser(id: 1)
 }
 ```
+
