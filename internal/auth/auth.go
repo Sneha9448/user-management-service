@@ -17,15 +17,17 @@ var jwtKey = []byte("your_secret_key") // In production, use an environment vari
 type Claims struct {
 	UserID string `json:"user_id"`
 	Email  string `json:"email"`
+	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }
 
 // GenerateJWT creates a new JWT token for a user
-func GenerateJWT(userID, email string) (string, error) {
+func GenerateJWT(userID, email, role string) (string, error) {
 	expirationTime := time.Now().Add(15 * time.Minute) // Token valid for 15 minutes
 	claims := &Claims{
 		UserID: userID,
 		Email:  email,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},

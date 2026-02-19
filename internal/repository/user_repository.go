@@ -22,9 +22,9 @@ func CreateUser(user *models.User) error {
 		return errors.New("database connection is not initialized")
 	}
 
-	query := `INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id`
+	query := `INSERT INTO users (name, email, role) VALUES ($1, $2, $3) RETURNING id`
 
-	err := database.DB.QueryRow(ctx, query, user.Name, user.Email).Scan(&user.ID)
+	err := database.DB.QueryRow(ctx, query, user.Name, user.Email, user.Role).Scan(&user.ID)
 	if err != nil {
 		log.Printf("Error creating user: %v", err)
 		return err
@@ -42,10 +42,10 @@ func GetUserByID(id int) (*models.User, error) {
 		return nil, errors.New("database connection is not initialized")
 	}
 
-	query := `SELECT id, name, email FROM users WHERE id = $1`
+	query := `SELECT id, name, email, role FROM users WHERE id = $1`
 
 	var user models.User
-	err := database.DB.QueryRow(ctx, query, id).Scan(&user.ID, &user.Name, &user.Email)
+	err := database.DB.QueryRow(ctx, query, id).Scan(&user.ID, &user.Name, &user.Email, &user.Role)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, nil // User not found
@@ -65,7 +65,7 @@ func GetAllUsers() ([]*models.User, error) {
 		return nil, errors.New("database connection is not initialized")
 	}
 
-	query := `SELECT id, name, email FROM users`
+	query := `SELECT id, name, email, role FROM users`
 
 	rows, err := database.DB.Query(ctx, query)
 	if err != nil {
@@ -77,7 +77,7 @@ func GetAllUsers() ([]*models.User, error) {
 	var users []*models.User
 	for rows.Next() {
 		var user models.User
-		if err := rows.Scan(&user.ID, &user.Name, &user.Email); err != nil {
+		if err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.Role); err != nil {
 			log.Printf("Error scanning user row: %v", err)
 			return nil, err
 		}
@@ -101,9 +101,9 @@ func UpdateUser(user *models.User) error {
 		return errors.New("database connection is not initialized")
 	}
 
-	query := `UPDATE users SET name = $1, email = $2 WHERE id = $3 returning id`
+	query := `UPDATE users SET name = $1, email = $2, role = $3 WHERE id = $4 returning id`
 
-	err := database.DB.QueryRow(ctx, query, user.Name, user.Email, user.ID).Scan(&user.ID)
+	err := database.DB.QueryRow(ctx, query, user.Name, user.Email, user.Role, user.ID).Scan(&user.ID)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return errors.New("user not found")
@@ -147,10 +147,10 @@ func GetUserByEmail(email string) (*models.User, error) {
 		return nil, errors.New("database connection is not initialized")
 	}
 
-	query := `SELECT id, name, email FROM users WHERE email = $1`
+	query := `SELECT id, name, email, role FROM users WHERE email = $1`
 
 	var user models.User
-	err := database.DB.QueryRow(ctx, query, email).Scan(&user.ID, &user.Name, &user.Email)
+	err := database.DB.QueryRow(ctx, query, email).Scan(&user.ID, &user.Name, &user.Email, &user.Role)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, errors.New("user not found")

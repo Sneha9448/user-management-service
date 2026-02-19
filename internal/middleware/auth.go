@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 	"user-management-service/internal/auth"
@@ -17,6 +18,7 @@ var UserCtxKey = &contextKey{"user"}
 type User struct {
 	ID    string
 	Email string
+	Role  string
 }
 
 // AuthMiddleware extracts the user from the JWT in the Authorization header
@@ -35,8 +37,7 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 			tokenStr := strings.TrimPrefix(header, "Bearer ")
 			claims, err := auth.VerifyJWT(tokenStr)
 			if err != nil {
-				// We don't block here because some queries might be public
-				// The resolver will check if the user is authenticated if needed
+				log.Printf("Auth Error: JWT verification failed: %v", err)
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -45,9 +46,12 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 			user := &User{
 				ID:    claims.UserID,
 				Email: claims.Email,
+				Role:  claims.Role,
 			}
+
 			ctx := context.WithValue(r.Context(), UserCtxKey, user)
 
+			log.Printf("Auth Success: User %s with Role %s identified", user.Email, user.Role)
 			// Continue with the new context
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

@@ -24,8 +24,8 @@ import (
 func (r *mutationResolver) CreateUser(ctx context.Context, name string, email string) (*models.User, error) {
 	defer r.TrackExecutionTime(time.Now(), "CreateUser")
 	userinfo := middleware.ForContext(ctx)
-	if userinfo == nil {
-		return nil, errors.New("access denied: authentication required")
+	if userinfo == nil || userinfo.Role != models.RoleAdmin {
+		return nil, errors.New("access denied: admin role required")
 	}
 
 	user := &models.User{
@@ -42,8 +42,8 @@ func (r *mutationResolver) CreateUser(ctx context.Context, name string, email st
 func (r *mutationResolver) UpdateUser(ctx context.Context, id string, name string, email string) (*models.User, error) {
 	defer r.TrackExecutionTime(time.Now(), "UpdateUser")
 	userinfo := middleware.ForContext(ctx)
-	if userinfo == nil {
-		return nil, errors.New("access denied: authentication required")
+	if userinfo == nil || userinfo.Role != models.RoleAdmin {
+		return nil, errors.New("access denied: admin role required")
 	}
 
 	idInt, err := strconv.Atoi(id)
@@ -67,8 +67,8 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, name strin
 func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (bool, error) {
 	defer r.TrackExecutionTime(time.Now(), "DeleteUser")
 	userinfo := middleware.ForContext(ctx)
-	if userinfo == nil {
-		return false, errors.New("access denied: authentication required")
+	if userinfo == nil || userinfo.Role != models.RoleAdmin {
+		return false, errors.New("access denied: admin role required")
 	}
 
 	idInt, err := strconv.Atoi(id)
@@ -99,6 +99,7 @@ func (r *mutationResolver) LoginWithGoogle(ctx context.Context, idToken string) 
 		user = &models.User{
 			Name:  "Google User", // Fallback name
 			Email: email,
+			Role:  models.RoleUser,
 		}
 		if err := repository.CreateUser(user); err != nil {
 			return nil, fmt.Errorf("failed to create user: %v", err)
@@ -106,7 +107,7 @@ func (r *mutationResolver) LoginWithGoogle(ctx context.Context, idToken string) 
 	}
 
 	// 3. Generate JWT
-	token, err := auth.GenerateJWT(strconv.Itoa(user.ID), user.Email)
+	token, err := auth.GenerateJWT(strconv.Itoa(user.ID), user.Email, user.Role)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate session: %v", err)
 	}
@@ -117,6 +118,7 @@ func (r *mutationResolver) LoginWithGoogle(ctx context.Context, idToken string) 
 			ID:    user.ID,
 			Name:  user.Name,
 			Email: user.Email,
+			Role:  user.Role,
 		},
 	}, nil
 }
@@ -155,7 +157,7 @@ func (r *mutationResolver) RequestOtp(ctx context.Context, email string) (*strin
 }
 
 // VerifyOtp is the resolver for the verifyOtp field.
-func (r *mutationResolver) VerifyOtp(ctx context.Context, email string, otp string) (*model.AuthResponse, error) {
+func (r *mutationResolver) VerifyOtp(ctx context.Context, email string, otp string, role *string) (*model.AuthResponse, error) {
 	defer r.TrackExecutionTime(time.Now(), "VerifyOtp")
 
 	// 1. Get latest OTP from DB
@@ -195,17 +197,28 @@ func (r *mutationResolver) VerifyOtp(ctx context.Context, email string, otp stri
 	user, err := repository.GetUserByEmail(email)
 	if err != nil {
 		// Create user if not exists
+		defaultRole := models.RoleUser
+		if role != nil && *role != "" {
+			defaultRole = *role
+		}
 		user = &models.User{
 			Name:  "OTP User",
 			Email: email,
+			Role:  defaultRole,
 		}
 		if err := repository.CreateUser(user); err != nil {
 			return nil, fmt.Errorf("failed to create user: %v", err)
 		}
+	} else if role != nil && *role != "" && user.Role != *role {
+		// Update user role if explicitly requested and different (for testing/demo)
+		user.Role = *role
+		if err := repository.UpdateUser(user); err != nil {
+			log.Printf("Warning: Failed to update user role to %s: %v", *role, err)
+		}
 	}
 
 	// 5. Generate JWT
-	token, err := auth.GenerateJWT(strconv.Itoa(user.ID), user.Email)
+	token, err := auth.GenerateJWT(strconv.Itoa(user.ID), user.Email, user.Role)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate session: %v", err)
 	}
@@ -216,6 +229,7 @@ func (r *mutationResolver) VerifyOtp(ctx context.Context, email string, otp stri
 			ID:    user.ID,
 			Name:  user.Name,
 			Email: user.Email,
+			Role:  user.Role,
 		},
 	}, nil
 }
@@ -223,6 +237,10 @@ func (r *mutationResolver) VerifyOtp(ctx context.Context, email string, otp stri
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*models.User, error) {
 	defer r.TrackExecutionTime(time.Now(), "Users")
+	userinfo := middleware.ForContext(ctx)
+	if userinfo == nil || userinfo.Role != models.RoleAdmin {
+		return nil, errors.New("access denied: admin role required")
+	}
 	return repository.GetAllUsers()
 }
 
